@@ -237,15 +237,18 @@ def _iter_nal_types(data: bytes):
         i += 1
 
 
-# Keyframe start markers (parameter sets that lead an IDR): HEVC VPS with
+# Keyframe start markers (parameter sets that lead an IDR): HEVC VPS/SPS with
 # nuh_layer_id=0, H.264 SPS. Both 4- and 3-byte start codes. Used by the
 # GOP cache to know where a decodable segment begins (#37).
 _KEYFRAME_MARKERS = (
     b"\x00\x00\x00\x01\x40\x01",
     b"\x00\x00\x01\x40\x01",
+    b"\x00\x00\x00\x01\x42\x01",
+    b"\x00\x00\x01\x42\x01",
     b"\x00\x00\x00\x01\x67",
     b"\x00\x00\x01\x67",
 )
+
 
 
 def _has_keyframe(payload: bytes) -> bool:

@@ -39,6 +39,11 @@ MPEG_PS_PACK = b"\x00\x00\x01\xba"
 HEVC_VPS_4B = b"\x00\x00\x00\x01\x40\x01"
 HEVC_VPS_3B = b"\x00\x00\x01\x40\x01"
 
+# HEVC SPS NAL start code with NAL header byte 0x42 (NAL type 33 = SPS) and
+# byte 0x01.
+HEVC_SPS_4B = b"\x00\x00\x00\x01\x42\x01"
+HEVC_SPS_3B = b"\x00\x00\x01\x42\x01"
+
 # H.264 SPS NAL: first byte 0x67 = forbidden=0, nal_ref_idc=3, nal_type=7
 # (Sequence Parameter Set).  Older HP7 firmware streams H.264 instead of
 # HEVC; the camera does not advertise the codec in INVITE, so we detect
@@ -220,6 +225,8 @@ class StreamDecoder:
         candidates = [
             buf.find(HEVC_VPS_4B),
             buf.find(HEVC_VPS_3B),
+            buf.find(HEVC_SPS_4B),
+            buf.find(HEVC_SPS_3B),
             buf.find(H264_SPS_4B),
             buf.find(H264_SPS_3B),
         ]
