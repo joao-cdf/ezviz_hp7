@@ -1182,6 +1182,13 @@ class Hp7StreamRelay:
                 pass
             return
 
+        if self._video_codec == "auto" and self._detected_codec is None:
+            # Wait up to 3s for the broadcast reader to sniff the codec NALs
+            for _ in range(30):
+                if self._detected_codec is not None:
+                    break
+                await asyncio.sleep(0.1)
+
         # Subscribe to the broadcast. LAN serves one muxed MPEG-PS feed;
         # cloud serves split video/audio PES streams.
         lan = self._active_lan
