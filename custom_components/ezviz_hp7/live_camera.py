@@ -245,11 +245,11 @@ def _has_keyframe(payload: bytes) -> bool:
             break
         if idx + 3 < len(payload):
             nal_type_byte = payload[idx + 3]
-            # H.264 SPS (type 7) -> 0x67
-            if nal_type_byte == 0x67:
+            # H.264: SPS (0x67), PPS (0x68), IDR (0x65)
+            if nal_type_byte in (0x67, 0x68, 0x65):
                 return True
-            # HEVC VPS (type 32) -> 0x40, HEVC SPS (type 33) -> 0x42
-            if nal_type_byte in (0x40, 0x42):
+            # HEVC: VPS (0x40), SPS (0x42), PPS (0x44), IDR_W_RADL (0x26), IDR_N_LP (0x28), CRA (0x2A)
+            if nal_type_byte in (0x40, 0x42, 0x44, 0x26, 0x28, 0x2A):
                 if idx + 4 < len(payload) and payload[idx + 4] == 0x01:
                     return True
     return False
