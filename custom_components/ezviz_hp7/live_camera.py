@@ -363,6 +363,12 @@ def _sender_thread(
                 "Hp7StreamRelay: ffmpeg %s input accept timed out", label
             )
             return
+        except OSError as exc:
+            _LOGGER.debug(
+                "Hp7StreamRelay: ffmpeg %s accept aborted (socket closed): %s",
+                label, exc,
+            )
+            return
         _LOGGER.debug("Hp7StreamRelay: %s accepted from %s", label, peer)
     finally:
         try:
@@ -1290,6 +1296,7 @@ class Hp7StreamRelay:
                     # capture yields a clean 66.667 ms spacing (15 fps).
                     # Wallclock stays on the raw elementary inputs below and
                     # on the cloud path, which genuinely have no timestamps.
+                    "-an",
                     "-f", "mpeg",
                     "-i", f"tcp://127.0.0.1:{raw_port}",
                     "-analyzeduration", "200000", "-probesize", "200000",
