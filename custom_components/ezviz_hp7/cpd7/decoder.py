@@ -221,16 +221,25 @@ class StreamDecoder:
         firmware).  The HP7/CP7 firmware does not advertise the codec on
         the INVITE response, so we match either marker.
         """
-        candidates = [
-            buf.find(HEVC_VPS_4B),
-            buf.find(HEVC_VPS_3B),
-            buf.find(HEVC_SPS_4B),
-            buf.find(HEVC_SPS_3B),
-            buf.find(H264_SPS_4B),
-            buf.find(H264_SPS_3B),
-        ]
-        candidates = [c for c in candidates if c >= 0]
-        return min(candidates) if candidates else -1
+        idx = -1
+        while True:
+            idx = buf.find(b"\x00\x00\x01", idx + 1)
+            if idx == -1:
+                break
+            if idx + 3 < len(buf):
+                nal_type_byte = buf[idx + 3]
+                # H.264 SPS (0x67)
+                if nal_type_byte == 0x67:
+                    if idx > 0 and buf[idx - 1] == 0x00:
+                        return idx - 1
+                    return idx
+                # HEVC VPS (0x40) or HEVC SPS (0x42)
+                if nal_type_byte in (0x40, 0x42):
+                    if idx + 4 < len(buf) and buf[idx + 4] == 0x01:
+                        if idx > 0 and buf[idx - 1] == 0x00:
+                            return idx - 1
+                        return idx
+        return -1
 
     def _absorb_plain(self, plain: bytes) -> None:
         if self._mpeg_started:
