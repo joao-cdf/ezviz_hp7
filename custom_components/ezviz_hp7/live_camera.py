@@ -1138,6 +1138,10 @@ class Hp7StreamRelay:
     ) -> None:
         peer = writer.get_extra_info("peername")
         _LOGGER.debug("Hp7StreamRelay: client connected from %s", peer)
+        _LOGGER.debug(
+            "Hp7StreamRelay: _handle_client starting, video_codec=%r, detected_codec=%r",
+            self._video_codec, self._detected_codec,
+        )
 
         wait = self._seconds_until_next_attempt()
         if wait > 0:
