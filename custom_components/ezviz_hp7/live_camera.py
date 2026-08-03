@@ -1316,6 +1316,8 @@ class Hp7StreamRelay:
                     ]
                 else:
                     cmd += ["-c:v", "copy"]
+                    if self._aggressive_mpegts:
+                        cmd += ["-bsf:v", "dump_extra"]
                 cmd += [
                     "-c:a", "aac", "-ar", "16000", "-ac", "1", "-b:a", "32k",
                     "-max_interleave_delta", "0",
