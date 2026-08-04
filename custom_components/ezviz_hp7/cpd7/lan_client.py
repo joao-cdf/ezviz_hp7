@@ -105,6 +105,10 @@ def _recv_response(sock: socket.socket, timeout: float = 5.0) -> bytes:
 
 
 def _discover_local_ip(host: str) -> str:
+    import os
+    override = os.environ.get("EZVIZ_LOCAL_IP")
+    if override:
+        return override
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect((host, 1))
     try:
